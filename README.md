@@ -1,4 +1,4 @@
-# URL Content Extractor Summariser
+# Extractly: AI-Powered Content Extractor & Summariser
 
 ![Java](https://img.shields.io/badge/Java-17-blue?logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?logo=spring)
@@ -9,7 +9,7 @@
 ![Railway](https://img.shields.io/badge/Backend-Railway-purple?logo=railway)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-A full-stack web app that extracts the main text from any public URL, summarises it using open-source NLP (HuggingFace BART Inference API with a local frequency-based fallback), and presents the result in a Notion-style editable table with PDF export and persistent history.
+Extractly is a full-stack web app that extracts the main text from any public URL, summarises it using open-source NLP (HuggingFace BART Inference API with a local frequency-based fallback), and presents the result in a Notion-style editable table with PDF export and persistent history.
 
 ---
 
