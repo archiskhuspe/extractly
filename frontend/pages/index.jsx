@@ -4,7 +4,6 @@ import SummaryBox from '../components/SummaryBox';
 import KeyPointsTable from '../components/KeyPointsTable';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
-import jsPDF from 'jspdf';
 
 // shadcn/ui Card component (manual, JS version)
 function Card({ className = '', children }) {

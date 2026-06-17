@@ -1,225 +1,292 @@
-  # Extractly: AI-powered Content Extractor
+# Extractly: AI-Powered Content Extractor & Summariser
 
-  A full-stack web app to extract, summarize, and display key points from any public URL using open-source NLP. Built with Java Spring Boot (backend), React.js + Next.js (frontend), Tailwind CSS, and shadcn/ui for a modern Notion-like UI. Features PDF export, inline editing, search, pagination, and more.
+![Java](https://img.shields.io/badge/Java-17-blue?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?logo=spring)
+![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=nextdotjs)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3-38bdf8?logo=tailwindcss)
+![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel)
+![Railway](https://img.shields.io/badge/Backend-Railway-purple?logo=railway)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-  ---
+A full-stack web app that extracts the main text from any public URL, summarises it using open-source NLP (HuggingFace BART Inference API with a local frequency-based fallback), and presents the result in a Notion-style editable table with PDF export and persistent history.
 
-  ## ✨ Features
-  - Extracts main content from any public URL (removes nav/footer/ads, prefers main/article/largest/div)
-  - Summarizes content using open-source NLP (local or HuggingFace Inference API)
-  - Produces a paragraphed summary and key points based on that summary
-  - Notion-style editable/searchable key points table
-  - Inline editing and deletion of key points (with animation)
-  - Search with highlight and instant filtering
-  - Pagination for large lists of key points
-  - Export summary and key points as PDF (jsPDF)
-  - Modern, responsive UI (Tailwind CSS + shadcn/ui)
-  - Loading spinners, skeletons, and error toasts
-  - Fully tested (Jest, Testing Library, Maven)
-  - Vercel-deployable frontend, Railway-deployable backend
+---
 
-  ---
+## Table of Contents
 
-  ## 🖼️ Screenshots
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [How It Works](#how-it-works)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [API Endpoints](#api-endpoints)
+- [Project Structure](#project-structure)
+- [Limitations](#limitations)
+- [License](#license)
 
-  ### Summary Extraction with PDF Export
-  ![Screenshot](./screenshots/image1.png)
+---
 
-  ### Key Points
-  ![Screenshot](./screenshots/image2.png)
+## Features
 
-  ### Summary Extraction History
-  ![Screenshot](./screenshots/image3.png)
+- Extracts main content from any public URL (removes nav, footer, ads; prefers `<main>` / `<article>` / largest `<div>`)
+- Summarises content via HuggingFace BART Inference API; falls back to a local frequency-based summariser when the API key is absent
+- Produces a multi-paragraph summary and up to 7 key points
+- Notion-style key-points table: inline editing, deletion with animation, search with highlight, pagination (5 per page)
+- Export the current summary and key points as a PDF (jsPDF)
+- Persistent extraction history stored in PostgreSQL — searchable and editable
+- Modern, responsive UI (Tailwind CSS + shadcn/ui, loading skeletons, toast notifications)
+- Includes basic unit and integration tests (Jest, Testing Library, Maven)
+- Deployable on Vercel (frontend) and Railway (backend + PostgreSQL)
 
-  ### Search Functionality
-  ![Screenshot](./screenshots/image4.png)
+---
 
-  ### Edit Functionality
-  ![Screenshot](./screenshots/image5.png)
+## Screenshots
 
-  ---
+### Summary Extraction with PDF Export
+![Summary Extraction](./screenshots/summary_extraction_pdf.png)
 
-  ## 🛠️ Setup & Deployment
+### Key Points Table
+![Key Points](./screenshots/key_points_table.png)
 
-  ### 1. Backend (Spring Boot on Railway)
-  - **Requirements:** Java 17+, Maven
-  - **Setup Locally:**
-    ```sh
-    cd backend
-    mvn clean install
-    mvn spring-boot:run
-    ```
-  - **Environment variables:**
-    - `HUGGINGFACE_API_KEY` (optional, for better summaries)
-    - `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD` (for PostgreSQL)
-  - **API URL:**
-    - By default: `http://localhost:8080/api/extract`
+### Extraction History
+![Extraction History](./screenshots/extraction_history.png)
 
-  #### Deploy Backend (Railway)
-  - Push your code to GitHub.
-  - Go to [Railway](https://railway.app/), create a new project, and connect your repo.
-  - Set the service root to `backend/`.
-  - Add the PostgreSQL plugin in Railway and copy the connection details.
-  - In Railway, set these environment variables for your backend service:
-    ```env
-    SPRING_DATASOURCE_URL=jdbc:postgresql://<private-host>:<port>/<database>
-    SPRING_DATASOURCE_USERNAME=<user>
-    SPRING_DATASOURCE_PASSWORD=<password>
-    HUGGINGFACE_API_KEY=<your_huggingface_api_key>
-    ```
-  - Make sure your `application.properties` contains:
-    ```properties
-    server.port=${PORT:8080}
-    ```
-  - Deploy and copy your public backend URL for frontend config (e.g., `https://extractly-ai-powered-content-extractor-production.up.railway.app/api`).
+### Search Functionality
+![Search](./screenshots/search_functionality.png)
 
-  ### 2. Frontend (Next.js on Vercel)
-  - **Requirements:** Node.js 18+, npm
-  - **Setup Locally:**
-    ```sh
-    cd frontend
-    npm install
-    npm run dev
-    ```
-  - **Environment variables:**
-    - Create a `.env.local` file in `frontend/`:
-      ```env
-      NEXT_PUBLIC_API_BASE_URL=https://extractly-ai-powered-content-extractor-production.up.railway.app/api
-      ```
-  - **Deploy Frontend (Vercel):**
-    - Push your code to GitHub.
-    - Go to [Vercel](https://vercel.com/), import your frontend repo, and deploy as a Next.js app.
-    - In Vercel dashboard, set `NEXT_PUBLIC_API_BASE_URL` to your backend's public URL.
+### Edit Functionality
+![Edit](./screenshots/edit_functionality.png)
 
-  ---
+---
 
-  ## 🌐 Environment Variables
-  - **Backend (Railway):**
-    - `HUGGINGFACE_API_KEY` (optional): Use a free HuggingFace Inference API key for better summaries. [Get one here.](https://huggingface.co/settings/tokens)
-    - `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`: Provided by Railway PostgreSQL plugin.
-  - **Frontend (Vercel):**
-    - `NEXT_PUBLIC_API_BASE_URL`: The base URL of your backend API (e.g., `https://extractly-ai-powered-content-extractor-production.up.railway.app/api`)
+## Tech Stack
 
-  ---
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 14, React 18, Tailwind CSS 3, shadcn/ui, jsPDF |
+| Backend | Java 17, Spring Boot 3.x, JSoup 1.17 |
+| Database | PostgreSQL 16 (Spring Data JPA) |
+| Summarisation | HuggingFace BART (`facebook/bart-large-cnn`) or local frequency-based NLP |
+| Deployment | Vercel (frontend), Railway (backend + DB) |
+| Containers | Docker, Docker Compose (local dev) |
+| Testing | Jest, @testing-library/react, Maven Surefire |
 
-  ## 🤖 API Usage
-  - **POST** `/api/extract`
-    - **Request Body:** `{ "url": "https://example.com" }`
-    - **Response:** `{ "summary": "...", "keyPoints": ["...", ...] }`
-    - **Errors:** Returns `{ "error": "..." }` for invalid URLs, fetch failures, or unexpected errors.
-  - **GET** `/api/extracted`
-    - Returns all extracted content stored in the database, including the summary for each entry.
+---
 
-  ---
+## How It Works
 
-  ## 📄 PDF Export & Table Features
-  - Export the current summary and visible key points as a PDF (jsPDF)
-  - Only non-deleted, filtered, and edited key points are exported
-  - Key points table supports:
-    - Inline editing (double-click or Edit button)
-    - Deletion with smooth animation
-    - Search with highlight (case-insensitive)
-    - Pagination (5 per page, stays on page after deletion)
-    - Empty state and no-results message
-  - **Extraction History:**
-    - The "Edit" button allows you to edit only the summary for each entry.
-    - The "Export as PDF" button exports only the summaries (not the full extracted content) for all entries.
+1. **Extraction** — JSoup fetches the target URL and strips boilerplate (nav, footer, ads, scripts). It then tries `<main>`, `<article>`, and the largest `<div>` in that order before falling back to `<body>`.
+2. **Summarisation** — If `HUGGINGFACE_API_KEY` is set, the text is split into 500-character chunks and sent to the BART large CNN model on HuggingFace's free Inference API. The chunk summaries are joined and split into paragraphs. If the API is unavailable or the key is absent, a local frequency-based algorithm scores and selects the most informative sentences.
+3. **Key Points** — Seven sentences are ranked by term frequency from the summary and returned as key points.
+4. **Persistence** — Each extraction (URL + raw content + summary) is saved to PostgreSQL so the history is browsable and editable across sessions.
 
-  ---
+---
 
-  ## 🏗️ Project Structure
+## Prerequisites
 
-  - **backend/**: Java Spring Boot REST API for extracting and summarizing content from public URLs.
-  - **frontend/**: Next.js app for submitting URLs and displaying extracted summaries and key points in a Notion-style table.
+- **Java 17+** and **Maven 3.9+** (backend)
+- **Node.js 18+** and **npm** (frontend)
+- **Docker Desktop** (for local PostgreSQL via Docker Compose)
+- A free [HuggingFace account](https://huggingface.co/settings/tokens) for better summaries (optional)
 
-  ---
+---
 
-  ## 🧪 Testing
+## Installation
 
-  ### Backend
-  - Run all backend tests:
-    ```sh
-    cd backend
-    mvn test
-    ```
+### 1. Start the local database
 
-  ### Frontend
-  - Run all frontend tests:
-    ```sh
-    cd frontend
-    npm run test
-    ```
-  - Example tests are provided in `frontend/__tests__/App.test.jsx` and cover both error and success cases for the main UI.
+```sh
+docker-compose up -d
+```
 
-  ---
+This starts PostgreSQL 16 at `localhost:5432` with:
+- Database: `aiextractor`
+- User: `postgres`
+- Password: `postgres`
 
-  ## 🖥️ Deployment Architecture
+### 2. Run the backend
 
-  ```mermaid
-  flowchart LR
-      User["User (Browser)"] --> Vercel["Frontend: Vercel (Next.js)"]
-      Vercel --> Backend["Backend: Railway (Spring Boot)"]
-      Backend -->|Fetches| External["External URLs"]
-      Backend -->|Stores| PostgreSQL["PostgreSQL: Railway Plugin"]
-  ```
+```sh
+cd backend
+mvn clean install
+mvn spring-boot:run
+```
 
-  ---
+The API starts at `http://localhost:8080`.
 
-  ## 🙏 Acknowledgements
-  - [JSoup](https://jsoup.org/) for HTML parsing
-  - [HuggingFace Inference API](https://huggingface.co/inference-api) for summarization
-  - [shadcn/ui](https://ui.shadcn.com/) and [Tailwind CSS](https://tailwindcss.com/) for UI
-  - [jsPDF](https://github.com/parallax/jsPDF) for PDF export
+### 3. Run the frontend
 
-  ---
+```sh
+cd frontend
+cp .env.local.example .env.local   # then edit NEXT_PUBLIC_API_BASE_URL if needed
+npm install
+npm run dev
+```
 
-  ## 💡 Contributing
-  Pull requests welcome! Please open an issue first to discuss major changes.
+The app opens at `http://localhost:3000`.
 
-  ---
+---
 
-  ## 🛠️ Troubleshooting
-  - **Frontend cannot reach backend:**
-    - Make sure `NEXT_PUBLIC_API_BASE_URL` is set to your backend's public URL in Vercel.
-    - Ensure CORS is enabled on your backend.
-  - **PDF export missing key points:**
-    - Only visible (filtered, non-deleted) key points are exported.
-  - **Build or deploy errors:**
-    - Check Node/Java versions, environment variables, and logs in Vercel/Railway.
+## Configuration
 
-  ---
+### Frontend (`frontend/.env.local`)
 
-  # Database Integration
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_API_BASE_URL` | Base URL of the backend API (e.g. `http://localhost:8080/api`) |
 
-  This project uses PostgreSQL for storing extracted content, managed by Railway in production.
+Copy `frontend/.env.local.example` to `frontend/.env.local` and set the value.
 
-  ## Local Development with PostgreSQL
+### Backend (`backend/src/main/resources/application.properties`)
 
-  1. Ensure Docker is installed and running.
-  2. In the project root, run:
-    ```sh
-    docker-compose up -d
-    ```
-    This will start a PostgreSQL instance at `localhost:5432` with:
-    - Database: `aiextractor`
-    - User: `postgres`
-    - Password: `postgres`
+The file contains defaults for local development (Docker Compose). Override with environment variables in production:
 
-  ## Spring Boot Backend Configuration
+| Variable | Description |
+|----------|-------------|
+| `SPRING_DATASOURCE_URL` | PostgreSQL JDBC URL |
+| `SPRING_DATASOURCE_USERNAME` | Database username |
+| `SPRING_DATASOURCE_PASSWORD` | Database password |
+| `HUGGINGFACE_API_KEY` | HuggingFace Inference API key (optional) |
+| `PORT` | HTTP port (default `8080`) |
 
-  The backend is configured to connect to this database using `src/main/resources/application.properties` for local dev, and Railway environment variables in production.
+---
 
-  ## API Endpoints
+## Usage
 
-  - `POST /api/extract` — Extracts and summarizes content from a URL, saves the raw extracted content to the database, and returns the summary and key points.
-  - `GET /api/extracted` — Returns all extracted content stored in the database.
+1. Paste any public URL into the input field and click **Extract**.
+2. The summary appears as paragraphs; key points appear in the table below.
+3. **Edit** a key point by double-clicking or clicking the Edit button; **Delete** removes it with an animation.
+4. **Search** filters key points in real time with highlighted matches.
+5. Click **Download Summary as PDF** to export the current view.
+6. Scroll to **Extraction History** to browse, search, edit, or delete past extractions.
 
-  ## Entity
+---
 
-  - `ExtractedContent`: Stores the URL and the generated summary.
+## API Endpoints
 
-  ## Development Workflow
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/extract` | Extract and summarise content from a URL; saves to DB |
+| `GET` | `/api/extracted` | Paginated, searchable extraction history |
+| `PUT` | `/api/extracted/{id}` | Edit a stored extraction (url, content, or summary) |
+| `DELETE` | `/api/extracted/{id}` | Delete a stored extraction |
 
-  - Start the database with Docker Compose (for local dev).
-  - Build and run the backend as usual (`mvn clean install` and `mvn spring-boot:run`).
-  - Use the new endpoints to extract and retrieve content.
+**POST `/api/extract` request body:**
+```json
+{ "url": "https://example.com" }
+```
+
+**Response:**
+```json
+{ "summary": "...", "keyPoints": ["...", "..."] }
+```
+
+---
+
+## Project Structure
+
+```
+url-content-extractor-summariser/
+├── backend/
+│   ├── src/main/java/com/aiextractor/extractor/
+│   │   ├── ExtractorApplication.java       # Spring Boot entry point
+│   │   ├── WebConfig.java                  # CORS configuration
+│   │   ├── controllers/
+│   │   │   └── ExtractController.java      # REST API (4 endpoints)
+│   │   ├── services/
+│   │   │   ├── HtmlExtractorService.java   # JSoup HTML parsing
+│   │   │   └── SummarizationService.java   # NLP summarisation (HuggingFace + fallback)
+│   │   ├── models/
+│   │   │   ├── ExtractedContent.java       # JPA entity
+│   │   │   ├── ExtractedContentRepository.java
+│   │   │   └── SummaryResponse.java        # Response DTO
+│   │   └── utils/
+│   │       └── JsoupUtils.java
+│   ├── Dockerfile
+│   └── pom.xml
+├── frontend/
+│   ├── pages/
+│   │   ├── index.jsx                       # Main application
+│   │   └── _app.jsx
+│   ├── components/
+│   │   ├── UrlInput.jsx
+│   │   ├── SummaryBox.jsx
+│   │   ├── KeyPointsTable.jsx
+│   │   └── ui/                             # shadcn/ui primitives
+│   ├── styles/globals.css
+│   ├── __tests__/App.test.jsx
+│   └── package.json
+├── screenshots/
+├── docker-compose.yml
+└── LICENSE
+```
+
+---
+
+## Deployment
+
+### Backend on Railway
+
+1. Push the repo to GitHub and create a new Railway project from it.
+2. Set the service root to `backend/`.
+3. Add the Railway PostgreSQL plugin and copy the connection details.
+4. Set environment variables in Railway:
+   ```
+   SPRING_DATASOURCE_URL=jdbc:postgresql://<host>:<port>/<db>
+   SPRING_DATASOURCE_USERNAME=<user>
+   SPRING_DATASOURCE_PASSWORD=<password>
+   HUGGINGFACE_API_KEY=<your_key>
+   ```
+
+### Frontend on Vercel
+
+1. Import the repo in Vercel; set the root directory to `frontend/`.
+2. Add the environment variable:
+   ```
+   NEXT_PUBLIC_API_BASE_URL=https://<your-railway-backend>.up.railway.app/api
+   ```
+
+### Architecture
+
+```mermaid
+flowchart LR
+    User["User (Browser)"] --> Vercel["Frontend: Vercel (Next.js)"]
+    Vercel --> Backend["Backend: Railway (Spring Boot)"]
+    Backend -->|Fetches| External["External URLs"]
+    Backend -->|Stores| PostgreSQL["PostgreSQL: Railway Plugin"]
+```
+
+---
+
+## Testing
+
+```sh
+# Backend
+cd backend && mvn test
+
+# Frontend
+cd frontend && npm test
+```
+
+Tests cover the Spring application context load (backend) and URL submission/error flows (frontend).
+
+---
+
+## Limitations
+
+- **JavaScript-heavy pages (SPAs) are not supported** — JSoup fetches raw HTML; pages that render content client-side will return little or no text.
+- **HuggingFace BART quality varies** — the free Inference API uses a shared queue and can time out or return low-quality summaries on short or poorly structured text.
+- **Local fallback is frequency-based, not ML** — it selects high-frequency sentences; it does not "understand" the text.
+- **No authentication** — extraction history is globally shared; anyone with access to the backend URL can read or delete all records.
+- **Test coverage is minimal** — two frontend smoke tests and one Spring context-load test; there are no integration tests for the extraction or summarisation pipeline.
+- **PDF export reflects in-memory state only** — deleted or edited key points update the export, but the database record is not synchronised automatically.
+- **Extraction quality is site-dependent** — paywalled, login-gated, or heavily structured pages (e.g. social media) may yield incomplete or empty content.
+
+---
+
+## License
+
+Released under the [MIT License](LICENSE).

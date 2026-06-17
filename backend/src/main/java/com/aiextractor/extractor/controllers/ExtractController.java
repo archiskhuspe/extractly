@@ -25,7 +25,6 @@ import org.springframework.data.domain.Sort;
  */
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*") // TODO: Restrict to frontend origin in production
 public class ExtractController {
     @Autowired
     private HtmlExtractorService htmlExtractorService;
