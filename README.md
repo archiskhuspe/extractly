@@ -1,4 +1,4 @@
-# Extractly: AI-Powered Content Extractor & Summariser
+# URL Content Extractor Summariser
 
 ![Java](https://img.shields.io/badge/Java-17-blue?logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?logo=spring)
